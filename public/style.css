@@ -4,34 +4,34 @@ body {
     justify-content: center;
     align-items: center;
     height: 100vh;
-    background: #0a0f29; /* Midnight blue background */
+    background: #0a0f29; /* Midnight blue */
     color: white;
     margin: 0;
+    overflow: hidden; /* Prevent body scrolling */
 }
 
 .chat-container {
-    position: absolute;
-    width: 100%;
-    height: 95%;
+    width: 90%;
+    max-width: 600px;
+    height: 80vh; /* Adjusted to fit within the viewport */
     background: #131b3a; /* Darker midnight blue */
     padding: 20px;
     border-radius: 8px;
+    display: flex;
+    flex-direction: column;
+    justify-content: space-between;
     box-shadow: 0 4px 10px rgba(0, 0, 0, 0.3);
-}
-
-h2 {
-    text-align: center;
 }
 
 ul {
     list-style: none;
     padding: 0;
-    max-height: 300px;
-    overflow-y: auto;
+    flex-grow: 1;
+    overflow-y: hidden; /* No scrolling */
 }
 
 li {
-    background: #1c2a4a; /* Deep blue message background */
+    background: #1c2a4a; /* Deep blue for messages */
     margin: 5px 0;
     padding: 8px;
     border-radius: 5px;
@@ -40,11 +40,7 @@ li {
 form {
     display: flex;
     gap: 10px;
-    position: absolute;
-    bottom: 10px;
-    width: 90%;
-    left: 50%;
-    transform: translateX(-50%);
+    padding-top: 10px;
 }
 
 input {

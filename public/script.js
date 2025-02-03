@@ -15,3 +15,12 @@ socket.on("chat message", (msg) => {
     li.textContent = msg;
     document.getElementById("messages").appendChild(li);
 });
+
+// Handle notifications
+socket.on("notification", (msg) => {
+    const li = document.createElement("li");
+    li.textContent = msg;
+    li.style.fontStyle = "italic";
+    li.style.color = "gray";
+    document.getElementById("messages").appendChild(li);
+});

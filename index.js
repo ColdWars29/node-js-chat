@@ -16,16 +16,20 @@ app.get('/', (req, res) => {
     res.sendFile(path.join(__dirname, 'public', 'index.html'));
 });
 
-// Socket.io connection handling
+// Handle WebSocket connections
 io.on('connection', (socket) => {
     console.log('A user connected');
+    
+    // Notify everyone that a new user joined
+    socket.broadcast.emit('notification', 'A new user has joined the chat');
 
     socket.on('chat message', (msg) => {
-        io.emit('chat message', msg); // Broadcast message to all clients
+        io.emit('chat message', msg);
     });
 
     socket.on('disconnect', () => {
         console.log('A user disconnected');
+        io.emit('notification', 'A user has left the chat');
     });
 });
 

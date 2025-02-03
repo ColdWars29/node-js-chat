@@ -1,55 +1,63 @@
+// server.js (or index.js)
 const express = require('express');
-const http = require('http');
-const path = require('path');
-const socketIo = require('socket.io');
+const session = require('express-session');
+const passport = require('passport');
+const GitHubStrategy = require('passport-github2').Strategy;
+require('dotenv').config();
 
 const app = express();
-const server = http.createServer(app);
-const io = socketIo(server);
 
-const port = process.env.PORT || 8080;
+// Session setup
+app.use(session({
+  secret: '12345678',
+  resave: false,
+  saveUninitialized: true,
+}));
 
-// Store messages in an array (temporary, resets on server restart)
-const messageHistory = [];
+app.use(passport.initialize());
+app.use(passport.session());
 
-// Serve static files from the 'public' folder
-app.use(express.static(path.join(__dirname, 'public')));
+// Passport GitHub Strategy
+passport.use(new GitHubStrategy({
+  clientID: process.env.GITHUB_CLIENT_ID,
+  clientSecret: process.env.GITHUB_CLIENT_SECRET,
+  callbackURL: 'https://dull-moselle-vexum-3e50836b.koyeb.app/'
+}, (accessToken, refreshToken, profile, done) => {
+  return done(null, profile);
+}));
 
-app.get('/', (req, res) => {
-    res.sendFile(path.join(__dirname, 'public', 'index.html'));
+passport.serializeUser((user, done) => {
+  done(null, user);
 });
 
-// Handle WebSocket connections
-io.on('connection', (socket) => {
-    console.log('A user connected');
-
-    // Send message history to the newly connected user
-    socket.emit('message history', messageHistory);
-
-    // Notify others that a new user joined
-    socket.broadcast.emit('notification', 'A new user has joined the chat');
-
-    // Listen for new chat messages
-    socket.on('chat message', (msg) => {
-        const messageData = { text: msg, timestamp: new Date().toISOString() };
-        messageHistory.push(messageData); // Store message in history
-        
-        // Limit message history to 50 messages
-        if (messageHistory.length > 50) {
-            messageHistory.shift();
-        }
-
-        io.emit('chat message', messageData); // Send message to all users
-    });
-
-    // Handle user disconnecting
-    socket.on('disconnect', () => {
-        console.log('A user disconnected');
-        io.emit('notification', 'A user has left the chat');
-    });
+passport.deserializeUser((obj, done) => {
+  done(null, obj);
 });
 
-// Start the server
-server.listen(port, () => {
-    console.log(`Server is running on http://localhost:${port}`);
+// GitHub Auth Routes
+app.get('/auth/github', passport.authenticate('github', { scope: ['user:email'] }));
+
+app.get('/auth/github/callback', 
+  passport.authenticate('github', { failureRedirect: '/' }),
+  (req, res) => {
+    res.redirect('/chat');
+  }
+);
+
+app.get('/logout', (req, res) => {
+  req.logout(() => {
+    res.redirect('/');
+  });
 });
+
+// Middleware to check if user is authenticated
+const isAuthenticated = (req, res, next) => {
+  if (req.isAuthenticated()) return next();
+  res.redirect('/');
+};
+
+app.get('/chat', isAuthenticated, (req, res) => {
+  res.send(`Welcome ${req.user.username}! <a href='/logout'>Logout</a>`);
+});
+
+app.listen(3000, () => console.log('Server running on http://localhost:3000'));

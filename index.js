@@ -22,25 +22,27 @@ app.get('/', (req, res) => {
 // Handle WebSocket connections
 io.on('connection', (socket) => {
     console.log('A user connected');
-    
+
     // Send message history to the newly connected user
     socket.emit('message history', messageHistory);
 
-    // Notify everyone else that a new user joined
+    // Notify others that a new user joined
     socket.broadcast.emit('notification', 'A new user has joined the chat');
 
+    // Listen for new chat messages
     socket.on('chat message', (msg) => {
         const messageData = { text: msg, timestamp: new Date().toISOString() };
         messageHistory.push(messageData); // Store message in history
         
-        // Limit message history to 50 messages (prevents excessive memory use)
+        // Limit message history to 50 messages
         if (messageHistory.length > 50) {
             messageHistory.shift();
         }
 
-        io.emit('chat message', messageData); // Broadcast message
+        io.emit('chat message', messageData); // Send message to all users
     });
 
+    // Handle user disconnecting
     socket.on('disconnect', () => {
         console.log('A user disconnected');
         io.emit('notification', 'A user has left the chat');

@@ -14,15 +14,27 @@ document.getElementById("chat-form").addEventListener("submit", (e) => {
 });
 
 socket.on("chat message", (msg) => {
-    const li = document.createElement("li");
-    li.textContent = msg;
-    document.getElementById("messages").appendChild(li);
+    addMessage(msg.text);
 });
 
 socket.on("notification", (msg) => {
-    const li = document.createElement("li");
-    li.textContent = msg;
-    li.style.fontStyle = "italic";
-    li.style.color = "gray";
-    document.getElementById("messages").appendChild(li);
+    addMessage(msg, true);
 });
+
+// Load message history on connection
+socket.on("message history", (messages) => {
+    messages.forEach((msg) => addMessage(msg.text));
+});
+
+// Function to add messages to chat
+function addMessage(text, isNotification = false) {
+    const li = document.createElement("li");
+    li.textContent = text;
+
+    if (isNotification) {
+        li.style.fontStyle = "italic";
+        li.style.color = "gray";
+    }
+
+    document.getElementById("messages").appendChild(li);
+}

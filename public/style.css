@@ -4,37 +4,33 @@ body {
     justify-content: center;
     align-items: center;
     height: 100vh;
-    background: #0a0f29; /* Midnight blue */
+    background: #0a0f29;
     color: white;
     margin: 0;
-    overflow: hidden; /* Prevent body scrolling */
+    overflow: hidden;
 }
 
 .chat-container {
-    width: 90%;
-    max-width: 600px;
-    height: 80vh; /* Adjusted to fit within the viewport */
-    background: #131b3a; /* Darker midnight blue */
+    width: 100%;
+    height: 90vh;
+    background: #131b3a;
     padding: 20px;
-    border-radius: 8px;
     display: flex;
     flex-direction: column;
     justify-content: space-between;
-    box-shadow: 0 4px 10px rgba(0, 0, 0, 0.3);
 }
 
 ul {
     list-style: none;
     padding: 0;
     flex-grow: 1;
-    overflow-y: hidden; /* No scrolling */
+    overflow-y: auto;
 }
 
 li {
-    background: #1c2a4a; /* Deep blue for messages */
+    background: #1c2a4a;
     margin: 5px 0;
     padding: 8px;
-    border-radius: 5px;
 }
 
 form {
@@ -47,24 +43,22 @@ input {
     flex: 1;
     padding: 12px;
     border: none;
-    border-radius: 5px;
-    background: #1a2456; /* Darker blue */
+    background: #1a2456;
     color: white;
     outline: none;
     font-size: 16px;
 }
 
 input::placeholder {
-    color: #8ca1db; /* Soft blue placeholder */
+    color: #8ca1db;
 }
 
 button {
-    background: #2c3e75; /* Darker blue for button */
+    background: #2c3e75;
     color: white;
     border: none;
     padding: 12px 15px;
     cursor: pointer;
-    border-radius: 5px;
     font-size: 16px;
     transition: 0.3s;
 }
